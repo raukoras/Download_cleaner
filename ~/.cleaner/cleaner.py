@@ -13,30 +13,31 @@ import getpass
 source_file = os.path.realpath(__file__)
 
 # Define the destination directory
-destination_dir = os.path.expanduser('~/.cleaner')
+destination_dir = '~/.cleaner'
 
 # Define the destination file path
 destination_file = os.path.join(destination_dir, os.path.basename(source_file))
 
 # Check if the file already exists in the destination directory
 if not os.path.exists(destination_dir):
-    os.makedirs(destination_dir)
+        os.makedirs(destination_dir)
 if not os.path.exists(destination_file):
     # Copy the file
     shutil.move(source_file, destination_dir)
+else:
+    print(f"The file {os.path.basename(source_file)} already exists in the destination directory.")
 
-# Create a new cron tab that runs at every reboot if not already there
+# Create a new cron tab
 username = getpass.getuser()
 cron = CronTab(user=username)
-for job in cron:
-    if  'cleaner.py' not in job.command:
-        job = cron.new(command='/usr/bin/python3 ~/.cleaner/cleaner.py')
-        job.every_reboot()
-        cron.write()
-if  len(cron.crons) == 0:
-        job = cron.new(command='/usr/bin/python3 ~/.cleaner/cleaner.py')
-        job.every_reboot()
-        cron.write()
+job = cron.new(command='/usr/bin/python3 ~/.cleaner/cleaner.py')
+
+# Set the job to run at every reboot
+job.setall('@reboot * * *')
+
+# Write the job to the cron tab
+cron.write()
+
 
 # Get locale & specify the path
 def_locale = locale.getdefaultlocale()
