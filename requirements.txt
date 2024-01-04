@@ -1,0 +1,2 @@
+plyer==2.1.0
+python-crontab==3.0.0
